@@ -1,0 +1,247 @@
+<header class="topbar">
+  <a class="brand" href="#" aria-label="Savor and Serve home">
+    <span class="brand-icon">✳</span>
+    <span>Savor<span class="brand-accent"> & Serve</span>
+      <small>THE RECIPE COLLECTION</small>
+    </span>
+  </a>
+
+  <nav class="top-nav" aria-label="Main navigation">
+    <a href="#home">Home</a>
+    <a href="#recipes">Recipes</a>
+    <a href="#about">Our Story</a>
+  </nav>
+
+  <button
+    class="favorites-nav"
+    type="button"
+    (click)="selectCategory('Favorites'); $event.preventDefault()"
+    (click)="searchText = ''"
+  >
+    ♡ <span>Favorites</span>
+  </button>
+</header>
+
+<main>
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <span class="eyebrow"><span class="eyebrow-line"></span> GOOD FOOD, GOOD MOOD</span>
+      <h1>Every recipe tells<br />a <em>delicious story.</em></h1>
+      <p>
+        Discover beautiful recipes, fresh inspiration and little moments
+        of happiness served straight from our kitchen to yours.
+      </p>
+
+      <div class="hero-actions">
+        <a class="primary-button" href="#recipes">Explore Recipes <span>↗</span></a>
+        <span class="hero-note">Made with love, shared with everyone.</span>
+      </div>
+
+      <div class="hero-stats">
+        <div><strong>15</strong><span>Handpicked recipes</span></div>
+        <div><strong>6</strong><span>Food categories</span></div>
+        <div><strong>100%</strong><span>Made for food lovers</span></div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-image-wrap">
+        <img
+          src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1100&q=90"
+          alt="Freshly prepared pasta served in a restaurant-style bowl"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="hero-badge">
+        <span class="badge-star">✳</span>
+        <span>COOK SOMETHING<br /><strong>WONDERFUL</strong></span>
+      </div>
+      <div class="hero-caption">
+        <span>FRESH INGREDIENTS</span>
+        <span>♡ MADE WITH LOVE</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="welcome-strip">
+    <span>✳ FRESH IDEAS</span>
+    <span>✳ SIMPLE INGREDIENTS</span>
+    <span>✳ DELICIOUS RESULTS</span>
+    <span>✳ YOUR NEXT FAVOURITE</span>
+  </section>
+
+  <section class="recipes-section" id="recipes">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">A LITTLE SOMETHING FOR EVERYONE</span>
+        <h2>Find your next <em>favourite.</em></h2>
+        <p>From quick bites to sweet endings, there's something worth sharing.</p>
+      </div>
+      <div class="recipe-count">
+        <strong>{{ filteredRecipes.length < 10 ? '0' + filteredRecipes.length : filteredRecipes.length }}</strong>
+        <span>RECIPES SHOWN</span>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <label class="search-box">
+        <span class="search-icon">⌕</span>
+        <input
+          type="search"
+          [(ngModel)]="searchText"
+          placeholder="Search by recipe name..."
+          aria-label="Search recipes"
+        />
+        <span class="search-shortcut">SEARCH</span>
+      </label>
+    </div>
+
+    <div class="category-row" aria-label="Filter recipes by category">
+      <button
+        *ngFor="let category of categories"
+        type="button"
+        class="category-button"
+        [class.active]="selectedCategory === category"
+        (click)="selectCategory(category)"
+      >
+        {{ category }}
+      </button>
+
+      <button
+        type="button"
+        class="category-button favorites-filter"
+        [class.active]="selectedCategory === 'Favorites'"
+        (click)="selectCategory('Favorites')"
+      >
+        ♡ Favorites <span>{{ favorites.length }}</span>
+      </button>
+    </div>
+
+    <div class="recipe-grid" *ngIf="filteredRecipes.length > 0; else noRecipes">
+      <article class="recipe-card" *ngFor="let recipe of filteredRecipes; trackBy: trackByRecipeId">
+        <div class="card-image">
+          <img
+            [src]="recipe.image"
+            [alt]="recipe.name"
+            loading="lazy"
+          />
+          <span class="card-category">{{ recipe.category }}</span>
+          <button
+            class="heart-button"
+            type="button"
+            [class.is-favorite]="isFavorite(recipe.id)"
+            [attr.aria-label]="isFavorite(recipe.id) ? 'Remove from favorites' : 'Add to favorites'"
+            (click)="toggleFavorite(recipe.id)"
+          >
+            {{ isFavorite(recipe.id) ? '♥' : '♡' }}
+          </button>
+        </div>
+
+        <div class="card-content">
+          <div class="card-rating"><span>★</span> {{ recipe.rating }} <i>·</i> Easy to make</div>
+          <h3>{{ recipe.name }}</h3>
+          <p>{{ recipe.description }}</p>
+
+          <div class="card-footer">
+            <div class="time-info">
+              <span class="clock-icon">◷</span>
+              <span>{{ recipe.prepTime + recipe.cookTime }} min</span>
+            </div>
+            <button class="view-recipe" type="button" (click)="openRecipe(recipe)">
+              View recipe <span>↗</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #noRecipes>
+      <div class="empty-state">
+        <span>♡</span>
+        <h3>No recipes found just yet.</h3>
+        <p>Try another search, choose a different category, or save a recipe to your favorites.</p>
+        <button
+          class="primary-button"
+          type="button"
+          (click)="searchText = ''; selectCategory('All Recipes')"
+        >
+          Show all recipes
+        </button>
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="quote-section" id="about">
+    <div class="quote-mark">“</div>
+    <p>Good food brings people together.<br />The best recipes make memories last.</p>
+    <span>OUR LITTLE KITCHEN PHILOSOPHY</span>
+  </section>
+
+  <section class="newsletter">
+    <div>
+      <span class="eyebrow">A NOTE FROM OUR KITCHEN</span>
+      <h2>Keep a little <em>flavour</em> in your day.</h2>
+      <p>Save your favourite recipes and come back whenever inspiration strikes.</p>
+    </div>
+    <a class="primary-button" href="#recipes">Find a recipe <span>↗</span></a>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <a class="brand footer-brand" href="#home">
+    <span class="brand-icon">✳</span>
+    <span>Savor<span class="brand-accent"> & Serve</span>
+      <small>THE RECIPE COLLECTION</small>
+    </span>
+  </a>
+  <p>A little inspiration for your everyday table.</p>
+  <a href="#home" class="back-top">BACK TO TOP ↑</a>
+  <div class="copyright">© 2026 Savor & Serve · Made for food lovers.</div>
+</footer>
+
+<div class="modal-backdrop" *ngIf="selectedRecipe as recipe" (click)="closeRecipe()">
+  <section
+    class="recipe-modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="recipe.name + ' recipe details'"
+    (click)="$event.stopPropagation()"
+  >
+    <button class="modal-close" type="button" aria-label="Close recipe" (click)="closeRecipe()">×</button>
+
+    <div class="modal-image">
+      <img [src]="recipe.image" [alt]="recipe.name" />
+      <span class="card-category">{{ recipe.category }}</span>
+    </div>
+
+    <div class="modal-content">
+      <span class="eyebrow">FROM OUR RECIPE COLLECTION</span>
+      <h2>{{ recipe.name }}</h2>
+      <p class="modal-description">{{ recipe.description }}</p>
+
+      <div class="modal-stats">
+        <div><span>PREPARATION</span><strong>{{ recipe.prepTime }} min</strong></div>
+        <div><span>COOKING</span><strong>{{ recipe.cookTime }} min</strong></div>
+        <div><span>RATING</span><strong>★ {{ recipe.rating }}</strong></div>
+      </div>
+
+      <h3>What you'll need</h3>
+      <ul class="ingredient-list">
+        <li *ngFor="let ingredient of recipe.ingredients">{{ ingredient }}</li>
+      </ul>
+
+      <h3>Let's make it</h3>
+      <ol class="instruction-list">
+        <li *ngFor="let instruction of recipe.instructions">{{ instruction }}</li>
+      </ol>
+
+      <button
+        class="primary-button modal-favorite"
+        type="button"
+        (click)="toggleFavorite(recipe.id)"
+      >
+        {{ isFavorite(recipe.id) ? '♥ Saved to favorites' : '♡ Save to favorites' }}
+      </button>
+    </div>
+  </section>
+</div>
